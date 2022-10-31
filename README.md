@@ -310,14 +310,7 @@ economy class
 ### 4. Read about the getopt() function and make a small example of using it.
 Getting directions input to a program is a standard way of telling the program how to operate.
 
-### 5. Create a program that creates "fake bookings" to the flights in flights.csv file
-Let the fake bookings generator know which flights file to read and create bookings for by specifying a filename argument option.
-Create arguments that tells the fake bookings generator how many fake bookings it should create.
-Be creative and add other options to the program.
-Also be creative and make random names!
-
-
-### 6. Create a program that creates "fake flights" into a .csv file
+### 5. Create a program that creates "fake flights" into a .csv file
 Create some options for the fake flight program to use when creating fake flights.
 Example is to set a range of dates, minimum, maximum seats for each class .... etc
 
@@ -334,6 +327,12 @@ fake-flights.exe -?
  -c {list seating configurations}
  -o {output filename}
 ```
+
+### 6. Create a program that creates "fake bookings" to the flights in flights.csv file
+Let the fake bookings generator know which flights file to read and create bookings for by specifying a filename argument option.
+Create arguments that tells the fake bookings generator how many fake bookings it should create.
+Be creative and add other options to the program.
+Also be creative and make random names!
 
 ### 7. Use the fake-flights-generator to create a new flights.csv file
 ```
