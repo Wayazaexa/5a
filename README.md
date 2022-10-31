@@ -3,11 +3,12 @@
 
 ```
 Review 4a's assignment
-Continue 4a assignment, maybe using the hints files.
+Continue 4a assignment, maybe using the hints provided here.
+Todays assignment.
 Final assignment presentation
 ```
 
-## 4a's assignment:
+## Last lectures assignment:
 
 ```
 You should create a program that takes two arguments.
