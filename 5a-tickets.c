@@ -75,6 +75,7 @@ int main(int argc, char **argv)
 
 	// Add elements to the linked lists and create tickets.
 	// Commented this out and added hardcoded files to read from as that makes it easier when running via VSC.
+	// TODO: Change this back bafore handing it in.
 	// fList = addFlights(argv[1]);
 	// bList = addBookings(argv[2]);
 	 fList = addFlights("flights.csv");
@@ -281,6 +282,7 @@ void createTicket(FLNode *flight, BLNode *booking, int row, int seat)
 {
 	char filename[30];
 	// I'm putting the tickets in a folder for now to get less clutter in my folder.
+	// TODO: Remove the "putting these in own folder" part.
 	sprintf(filename, "tickets/ticket-%d.txt", booking->bNum);
 	FILE *fp = fopen(filename,"w");
 
