@@ -282,11 +282,11 @@ void createTicket(FLNode *flight, BLNode *booking, int row, int seat)
 	FILE *fp = fopen(filename,"w");
 
 	if(fp) {
-		fprintf(fp,"BOOKING: %d\n", booking->bNum);
-		fprintf(fp,"FLIGHT: %d DEPARTURE: %s DESTINATION: %s %s %s\n", flight->flNum, flight->dep, flight->des, flight->date, flight->time);
-		fprintf(fp,"PASSENGER %s %s\n", booking->fName, booking->surname);
-		fprintf(fp,"CLASS: %s\n", booking->sClass);
-		fprintf(fp,"ROW %d SEAT %d\n", row, seat);
+		fprintf(fp, "BOOKING: %d\n", booking->bNum);
+		fprintf(fp, "FLIGHT: %d DEPARTURE: %s DESTINATION: %s %s %s\n", flight->flNum, flight->dep, flight->des, flight->date, flight->time);
+		fprintf(fp, "PASSENGER %s %s\n", booking->fName, booking->surname);
+		fprintf(fp, "CLASS: %s\n", booking->sClass);
+		fprintf(fp, "ROW %d SEAT %d\n", row, seat);
 		fclose(fp);
 	}
 	else
@@ -303,6 +303,16 @@ void createTicket(FLNode *flight, BLNode *booking, int row, int seat)
  */
 void cancelFligths(FLNode *fList, BLNode *bList)
 {
+	int cancelledFlights = 0;
+	
+	FILE *fp = fopen("cancelled-flights.txt", "w");
+
+	if (fp)
+	{
+		fprintf(fp, "The following flights have no passengers booked and are now cancelled:\n\n");
+		fclose(fp);
+	}
+
 	for (FLNode *FLIt = fList; FLIt != NULL; FLIt = FLIt->next)
 	{
 		int isFlightBooked = 0;
@@ -344,7 +354,17 @@ void cancelFligths(FLNode *fList, BLNode *bList)
 
 		if (!isFlightBooked)
 		{
-			printf("The following flight has no passengers and is now cancelled.\nFNr: %d, Date: %s, Time: %s\n", FLIt->flNum, FLIt->date, FLIt->time);
+			cancelledFlights++;
+			FILE *fp = fopen("cancelled-flights.txt", "a");
+			
+			if(fp) {
+				fprintf(fp, "%d) Flight %d, Departure %s, Destination %s, Date %s, Time %s\n", cancelledFlights, FLIt->flNum, FLIt->dep, FLIt->des, FLIt->date, FLIt->time);
+				fclose(fp);
+			}
+			else
+			{
+				fprintf(stderr, "Error! Could not open the file containing cancelled flights!\n");
+			}
 		}
 	}
 }
