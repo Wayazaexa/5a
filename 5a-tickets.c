@@ -53,7 +53,9 @@ BLNode* addBookings(const char *filename);
 void createTickets(FLNode *fList, BLNode *bList);
 int allocateSeat(FLNode *flight, BLNode *booking, int *row, int *seat);
 void createTicket(FLNode *flight, BLNode *booking, int row, int seat);
-void cancelFligths(FLNode *fList, BLNode *bList);
+FLNode* cancelFligths(FLNode *fList);
+void createSeatingMap(FLNode *fList);
+FLNode* deleteFLNode(FLNode *fList, FLNode *node);
 void deleteFList(FLNode *head);
 void deleteBList(BLNode *head);
 
@@ -81,7 +83,8 @@ int main(int argc, char **argv)
 	if (fList && bList)
 	{
 		createTickets(fList, bList);
-		cancelFligths(fList, bList);
+		fList = cancelFligths(fList);
+		createSeatingMap(fList);
 	}
 
 	// Clean up properly.
@@ -295,16 +298,23 @@ void createTicket(FLNode *flight, BLNode *booking, int row, int seat)
 	}
 }
 
+/*
+TODO:
+Möjligtvis gör om så att FLNode innehåller en variabel som indikerar om flighten
+har några bokningar överhuvudtaget (sätt denna i allocateSeat() isf) för att
+underlätta sökningen efter obokade flights att cancella.
+*/
 /**
- * @brief 
+ * @brief This function goes through a linked list that contains information
+ * about flights, finds nodes that indicates that a flight is not booked, and
+ * removes them from the linked list.
  * 
- * @param fList 
- * @param bList 
+ * @param fList A linked list containing information about flights.
+ * @return FLNode* Returns a linked list with no unbooked flights.
  */
-void cancelFligths(FLNode *fList, BLNode *bList)
+FLNode* cancelFligths(FLNode *fList)
 {
 	int cancelledFlights = 0;
-	
 	FILE *fp = fopen("cancelled-flights.txt", "w");
 
 	if (fp)
@@ -360,6 +370,7 @@ void cancelFligths(FLNode *fList, BLNode *bList)
 			if(fp) {
 				fprintf(fp, "%d) Flight %d, Departure %s, Destination %s, Date %s, Time %s\n", cancelledFlights, FLIt->flNum, FLIt->dep, FLIt->des, FLIt->date, FLIt->time);
 				fclose(fp);
+				fList = deleteFLNode(fList, FLIt);
 			}
 			else
 			{
@@ -367,8 +378,86 @@ void cancelFligths(FLNode *fList, BLNode *bList)
 			}
 		}
 	}
+	return fList;
 }
 
+/**
+ * @brief This function removes a node from a linked list of type FLNode.
+ * 
+ * @param fList A linked list containing information about flights.
+ * @param node A node in a linked list that is going to be removed.
+ * @return FLNode* Returns a linked list with the node removed.
+ */
+FLNode* deleteFLNode(FLNode *fList, FLNode *node)
+{
+	if (fList == node)
+	{
+		fList = fList->next;
+	}
+	else
+	{
+		FLNode *FLIt = fList;
+		while (FLIt->next != node)
+		{
+			FLIt = FLIt->next;
+		}
+		FLIt->next = FLIt->next->next;
+	}
+	free(node->fSeatFlags);
+	free(node->bSeatFlags);
+	free(node->eSeatFlags);
+	free(node);
+
+	return fList;
+}
+
+/*
+TODO:
+Seating-report ska innehålla seating-map för alla flights, alternativt kan
+programmet ta ett argument för om man vill ha en rapport för alla, eller en
+rapport per flight.
+*/
+/**
+ * @brief This function creates a seating-report.txt file containing a seating-map
+ * for every flight that has passengers.
+ * 
+ * @param fList A linked list containing information about flights.
+ */
+void createSeatingMap(FLNode *fList)
+{
+	FILE *fp = fopen("seating-report.txt", "w");
+
+	if (fp)
+	{
+		for (FLNode *FLIt = fList; FLIt != NULL; FLIt = FLIt->next)
+		{
+			fprintf(fp, "Flight %d, Departure %s, Destination %s, Date %s, Time %s\n", FLIt->flNum, FLIt->dep, FLIt->des, FLIt->date, FLIt->time);
+			fprintf(fp, "first class\n");
+			for (int i = 0; i < FLIt->fRows; i++)
+			{
+				fprintf(fp, "[%d][%d] [%d][%d][%d] [%d][%d]", FLIt->fSeatFlags[i * 7], FLIt->fSeatFlags[i * 7 + 1], FLIt->fSeatFlags[i * 7 + 2],
+							 FLIt->fSeatFlags[i * 7 + 3], FLIt->fSeatFlags[i * 7 + 4], FLIt->fSeatFlags[i * 7 + 5], FLIt->fSeatFlags[i * 7 + 6]);
+				fprintf(fp, "\n");
+			}
+			fprintf(fp, "business class\n");
+			for (int i = 0; i < FLIt->bRows; i++)
+			{
+				fprintf(fp, "[%d][%d] [%d][%d][%d] [%d][%d]", FLIt->bSeatFlags[i * 7], FLIt->bSeatFlags[i * 7 + 1], FLIt->bSeatFlags[i * 7 + 2],
+							 FLIt->bSeatFlags[i * 7 + 3], FLIt->bSeatFlags[i * 7 + 4], FLIt->bSeatFlags[i * 7 + 5], FLIt->bSeatFlags[i * 7 + 6]);
+				fprintf(fp, "\n");
+			}
+			fprintf(fp, "economy class\n");
+			for (int i = 0; i < FLIt->eRows; i++)
+			{
+				fprintf(fp, "[%d][%d] [%d][%d][%d] [%d][%d]", FLIt->eSeatFlags[i * 7], FLIt->eSeatFlags[i * 7 + 1], FLIt->eSeatFlags[i * 7 + 2],
+							 FLIt->eSeatFlags[i * 7 + 3], FLIt->eSeatFlags[i * 7 + 4], FLIt->eSeatFlags[i * 7 + 5], FLIt->eSeatFlags[i * 7 + 6]);
+				fprintf(fp, "\n");
+			}
+			fprintf(fp, "\n");
+		}
+		fclose(fp);
+	}
+}
 
 /**
  * @brief This function calls free() on every block of memory that was allocated
