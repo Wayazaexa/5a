@@ -143,11 +143,11 @@ FlightListNode *read_flights(const char *filename)
 		FlightListNode *nn = malloc(sizeof(FlightListNode));
 		memcpy(nn,&fln,sizeof(FlightListNode));
 		nn->fs = malloc(fln.nfs*sizeof(int)*7); /** 7 is the number of seats in a row */
-		memset(nn->fs,0,fln.nfs);
+		memset(nn->fs,0,fln.nfs*7);
 		nn->bs = malloc(fln.nbs*sizeof(int)*7); /** 7 is the number of seats in a row */
-		memset(nn->bs,0,fln.nbs);
+		memset(nn->bs,0,fln.nbs*7);
 		nn->es = malloc(fln.nes*sizeof(int)*7); /** 7 is the number of seats in a row */
-		memset(nn->es,0,fln.nes);
+		memset(nn->es,0,fln.nes*7);
 		nn->next =  head;
 		head = nn;
 	}
